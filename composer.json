@@ -1,0 +1,28 @@
+{
+    "name": "sfblaauw/tripolis-php-rest-api.git",
+    "description": "Tripolis API v3 client",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "sfblaauw",
+            "email": "sfblaauw@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": { "Tripolis\\": "lib/Tripolis/" }
+    },
+    "autoload-dev": {
+        "psr-4": { "Tripolis\\Tests\\": "test/Tripolis/Tests/" }
+    },
+    "require": {
+        "php": "^5.5 || ^7.0",
+        "guzzlehttp/guzzle": "^6.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^4.8"
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    }
+}
