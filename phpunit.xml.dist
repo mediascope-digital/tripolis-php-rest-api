@@ -12,9 +12,12 @@
     >
     <php>
         <!-- API Keys -->
-        <server name="TRIPOLIS_API_HOST" value="YOUR_API_HOST" />
+        <server name="TRIPOLIS_API_DATACENTER" value="YOUR_API_DATACENTER" />
         <server name="TRIPOLIS_API_USERNAME" value="YOUR_API_USERNAME" />
         <server name="TRIPOLIS_API_KEY" value="YOUR_API_KEY" />
+        <server name="TRIPOLIS_CONTACT_DATABASE_ID" value="YOUR_CONTACT_DATABASE_ID" />
+        <server name="TRIPOLIS_CONTACT_GROUP_SUBSCRIBERS_NAME" value="YOUR_CONTACT_GROUP_SUBSCRIBERS_NAME" />
+        <server name="TRIPOLIS_CONTACT_GROUP_UNSUBSCRIBERS_NAME" value="YOUR_CONTACT_GROUP_UNSUBSCRIBERS_NAME" />
     </php>
     <testsuites>
         <testsuite name="Tripolis Test Suite">

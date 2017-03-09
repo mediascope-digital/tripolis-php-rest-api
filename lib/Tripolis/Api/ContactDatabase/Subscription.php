@@ -36,6 +36,8 @@ class Subscription extends AbstractApi
      * @param string $contactDatabaseId The contact database identifier.
      * @param array  $data              The contact data.
      *
+     *
+     *
      * @return object
      */
     public function create($contactDatabaseId, array $data)

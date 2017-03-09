@@ -17,18 +17,14 @@ class SubscriptionTest extends AbstractApiTestCase
      */
     public function testAll()
     {
+        $api = new Subscription($this->getClient());
+        $contactDatabaseId = $this->getContactDatabaseId();
+
         // new test email
         $newEmail = sprintf('%s@tripolis.com', uniqid());
 
-        $contactDatabaseApi = new ContactDatabase($this->getClient());
-        $contactApi = new Contact($this->getClient());
-
-        $contactDatabase = current($contactDatabaseApi->all());
-
-        $api = new Subscription($this->getClient());
-
         // create
-        $response = $api->create($contactDatabase->id, [
+        $response = $api->create($contactDatabaseId, [
             'contactFields' => [
                 'email' => $newEmail,
             ],
@@ -36,24 +32,22 @@ class SubscriptionTest extends AbstractApiTestCase
         ]);
 
         $this->assertInstanceOf('stdClass', $response);
-        $this->assertPropertyExists($response, ['contactId']);
+        $this->assertPropertyExists('contactId', $response);
 
         $contactId = $response->contactId;
 
         // show
-        $response = $api->show($contactDatabase->id, $contactId);
+        $response = $api->show($contactDatabaseId, $contactId);
 
         $this->assertInstanceOf('stdClass', $response);
-        $this->assertPropertyExists($response, [
-            'contactFields',
-        ]);
+        $this->assertPropertyExists('contactFields', $response);
         $this->assertEquals($newEmail, $response->contactFields->email);
 
         // update test email
         $updateEmail = sprintf('%s@tripolis.com', uniqid());
 
         // update
-        $response = $api->update($contactDatabase->id, $contactId, [
+        $response = $api->update($contactDatabaseId, $contactId, [
             'contactFields' => [
                 'email' => $updateEmail,
             ],
@@ -61,19 +55,18 @@ class SubscriptionTest extends AbstractApiTestCase
         ]);
 
         $this->assertInstanceOf('stdClass', $response);
-        $this->assertPropertyExists($response, ['contactId']);
+        $this->assertPropertyExists('contactId', $response);
 
         // show
-        $response = $api->show($contactDatabase->id, $contactId);
+        $response = $api->show($contactDatabaseId, $contactId);
 
         $this->assertInstanceOf('stdClass', $response);
-        $this->assertPropertyExists($response, [
-            'contactFields',
-        ]);
+        $this->assertPropertyExists('contactFields', $response);
         $this->assertEquals($updateEmail, $response->contactFields->email);
 
         // remove
-        $response = $contactApi->remove($contactDatabase->id, $contactId);
+        $contactApi = new Contact($this->getClient());
+        $response = $contactApi->remove($contactDatabaseId, $contactId);
         $this->assertEquals('', $response);
     }
 }

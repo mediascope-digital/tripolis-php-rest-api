@@ -13,24 +13,47 @@ abstract class AbstractApiTestCase extends \PHPUnit_Framework_TestCase
      */
     protected function getClient()
     {
-        return new Client($_SERVER['TRIPOLIS_API_HOST'], $_SERVER['TRIPOLIS_API_USERNAME'], $_SERVER['TRIPOLIS_API_KEY']);
+        return new Client($_SERVER['TRIPOLIS_API_DATACENTER'], $_SERVER['TRIPOLIS_API_USERNAME'], $_SERVER['TRIPOLIS_API_KEY']);
+    }
+
+    /**
+     * Returns contact database for testing purpose.
+     *
+     * @return string
+     */
+    protected function getContactDatabaseId()
+    {
+        return $_SERVER['TRIPOLIS_CONTACT_DATABASE_ID'];
+    }
+
+    /**
+     * Returns contact group subscribers name for testing purpose.
+     *
+     * @return string
+     */
+    protected function getContactGroupSubscribersName()
+    {
+        return $_SERVER['TRIPOLIS_CONTACT_GROUP_SUBSCRIBERS_NAME'];
+    }
+
+    /**
+     * Returns contact group unsubscribers name for testing purpose.
+     *
+     * @return string
+     */
+    protected function getContactGroupUnsubscribersName()
+    {
+        return $_SERVER['TRIPOLIS_CONTACT_GROUP_UNSUBSCRIBERS_NAME'];
     }
 
     /**
      * Checks if the property exist in the given response.
      *
-     * @param object $response
-     * @param mixed  $expected
+     * @param string    $property The property name
+     * @param \stdClass $response The response
      */
-    protected function assertPropertyExists($response, $expected)
+    protected function assertPropertyExists($property, \stdClass $response)
     {
-        $expected = (array) $expected;
-
-        $count = count(get_object_vars($response));
-        $this->assertCount($count, $expected, 'The number of expected properties does not match.');
-
-        foreach ($expected as $property) {
-            $this->assertTrue(property_exists($response, $property), sprintf('The property "%s" does not exits.', $property));
-        }
+        $this->assertTrue(property_exists($response, $property), sprintf('The property "%s" does not exits.', $property));
     }
 }

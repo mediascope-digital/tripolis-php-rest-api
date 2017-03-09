@@ -9,13 +9,17 @@ class ContactDatabase extends AbstractApi
     /**
      * Get list of contact databases.
      *
-     * Get a list of available contact databases.
+     * Get a list of available contact databases. List supports sorting and filtering.
      *
-     * @return array
+     * @param array $params An array of sorting and filtering parameters
+     *
+     * @return object
      */
-    public function all()
+    public function all(array $params = [])
     {
-        return $this->get('contactdatabases');
+        return $this->get('contactdatabases', [
+            'query' => $params,
+        ]);
     }
 
     /**

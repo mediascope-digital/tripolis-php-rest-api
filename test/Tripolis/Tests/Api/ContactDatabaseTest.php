@@ -13,19 +13,35 @@ class ContactDatabaseTest extends AbstractApiTestCase
     public function testAll()
     {
         $api = new ContactDatabase($this->getClient());
-
         $response = $api->all();
 
-        $this->assertInternalType('array', $response);
-        $this->assertPropertyExists($response[0], [
-            'id',
-            'label',
-            'name',
-            'properties',
-            'defaultContactDatabaseFieldName',
-            'defaultContactDatabaseFieldGroupId',
-            'modifiedAt',
-        ]);
+        $this->assertInstanceOf('stdClass', $response);
+        $this->assertPropertyExists('contactDatabases', $response);
+        $this->assertInternalType('array', $response->contactDatabases);
+    }
+
+    /**
+     * @covers ContactDatabase::all
+     */
+    public function testAllFilterByLabel()
+    {
+        $api = new ContactDatabase($this->getClient());
+        $label = $api->show($this->getContactDatabaseId())->label;
+        $response = $api->all(['label' => $label]);
+
+        $this->assertCount(1, $response->contactDatabases);
+    }
+
+    /**
+     * @covers ContactDatabase::all
+     */
+    public function testAllFilterByName()
+    {
+        $api = new ContactDatabase($this->getClient());
+        $name = $api->show($this->getContactDatabaseId())->name;
+        $response = $api->all(['name' => $name]);
+
+        $this->assertCount(1, $response->contactDatabases);
     }
 
     /**
@@ -34,20 +50,9 @@ class ContactDatabaseTest extends AbstractApiTestCase
     public function testShow()
     {
         $api = new ContactDatabase($this->getClient());
-
-        $contactDatabase = current($api->all());
-
-        $response = $api->show($contactDatabase->id);
+        $response = $api->show($this->getContactDatabaseId());
 
         $this->assertInstanceOf('stdClass', $response);
-        $this->assertPropertyExists($response, [
-            'id',
-            'label',
-            'name',
-            'properties',
-            'defaultContactDatabaseFieldName',
-            'defaultContactDatabaseFieldGroupId',
-            'modifiedAt',
-        ]);
+        $this->assertPropertyExists('id', $response);
     }
 }
