@@ -13,7 +13,7 @@ class BulkContactTest extends AbstractApiTestCase
     /**
      * @covers BulkContact::create
      *
-     * @dataProvider getCreateContactsData
+     * @dataProvider getCreateContactsProvider
      */
     public function testCreate($emails)
     {
@@ -53,7 +53,7 @@ class BulkContactTest extends AbstractApiTestCase
 
         $this->assertInstanceOf('stdClass', $response);
         $this->assertPropertyExists('createdContacts', $response);
-        $this->assertCount(2, $response->createdContacts);
+        $this->assertCount(count($contactsFields), $response->createdContacts);
         $this->assertPropertyExists('bulkContactErrors', $response);
         $this->assertEmpty($response->bulkContactErrors);
     }
@@ -61,7 +61,7 @@ class BulkContactTest extends AbstractApiTestCase
     /**
      * @return array
      */
-    public function getCreateContactsData()
+    public function getCreateContactsProvider()
     {
         $emails = [];
         $i = 0;

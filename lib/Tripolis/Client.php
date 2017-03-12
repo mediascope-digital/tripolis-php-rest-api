@@ -5,6 +5,7 @@ namespace Tripolis;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\ClientInterface;
 use Tripolis\Api;
+use Tripolis\Api\ApiInterface;
 
 class Client
 {
@@ -14,11 +15,11 @@ class Client
     const API_VARSION = '1.0';
 
     /**
-     * Tripolis API datacenter.
+     * Tripolis API url.
      *
      * @var string
      */
-    private $apiDatacenter;
+    private $apiUrl;
 
     /**
      * Tripolis API username.
@@ -35,13 +36,6 @@ class Client
     private $apiKey;
 
     /**
-     * Tripolis API endpoint.
-     *
-     * @var string
-     */
-    private $apiEndpoint = 'https://<dc>.tripolis.com/api3/rest/';
-
-    /**
      * Http client.
      *
      * @var ClientInterface
@@ -51,20 +45,19 @@ class Client
     /**
      * Constructor.
      *
-     * @param string $apiDatacenter Tripolis API datacenter.
-     * @param string $apiUsername   Tripolis API username.
-     * @param string $apiKey        Tripolis API key.
-     * @param array  $httpOptions   Http client options.
+     * @param string $apiUrl      Tripolis API url.
+     * @param string $apiUsername Tripolis API username.
+     * @param string $apiKey      Tripolis API key.
+     * @param array  $httpOptions Http client options.
      */
-    public function __construct($apiDatacenter, $apiUsername, $apiKey, array $httpOptions = [])
+    public function __construct($apiUrl, $apiUsername, $apiKey, array $httpOptions = [])
     {
-        $this->apiDatacenter = $this->getDatacenter($apiDatacenter);
+        $this->setApiUrl($apiUrl);
         $this->apiUsername = $apiUsername;
         $this->apiKey = $apiKey;
-        $this->apiEndpoint = str_replace('<dc>', $this->apiDatacenter, $this->apiEndpoint);
 
         $config = array_merge([
-            'base_uri' => $this->apiEndpoint,
+            'base_uri' => $this->apiUrl,
             'allow_redirects' => false,
             'auth' => [
                 $this->apiUsername,
@@ -78,26 +71,26 @@ class Client
     /**
      * Creates a Tripolis client.
      *
-     * @param string $apiDatacenter Tripolis API datacenter.
-     * @param string $apiUsername   Tripolis API username.
-     * @param string $apiKey        Tripolis API key.
-     * @param array  $httpOptions   Http client options.
+     * @param string $apiUrl      Tripolis API url.
+     * @param string $apiUsername Tripolis API username.
+     * @param string $apiKey      Tripolis API key.
+     * @param array  $httpOptions Http client options.
      *
      * @return Client
      */
-    public static function create($apiDatacenter, $apiUsername, $apiKey, array $httpOptions = [])
+    public static function create($apiUrl, $apiUsername, $apiKey, array $httpOptions = [])
     {
-        return new static($apiDatacenter, $apiUsername, $apiKey, $httpOptions);
+        return new static($apiUrl, $apiUsername, $apiKey, $httpOptions);
     }
 
     /**
-     * Retruns the API datacenter.
+     * Retruns the API url.
      *
      * @return string
      */
-    public function getApiDatacenter()
+    public function getApiUrl()
     {
-        return $this->apiDatacenter;
+        return $this->apiUrl;
     }
 
     /**
@@ -121,32 +114,46 @@ class Client
     }
 
     /**
-     * Retruns the API endpoint.
+     * @TODO
      *
-     * @return string
-     */
-    public function getApiEndpoint()
-    {
-        return $this->apiEndpoint;
-    }
-
-    /**
-     * [api description]
+     * @param string $name [description]
      *
-     * @param  string $name [description]
+     * @throws \InvalidArgumentException
      *
-     * @return [type]       [description]
+     * @return ApiInterface
      */
     public function api($name)
     {
         switch ($name) {
+            case 'contactDatabase':
+            case 'contactdatabase':
             case 'contactDatabases':
             case 'contactdatabases':
                 $api = new Api\ContactDatabase($this);
                 break;
+            default:
+                throw new \InvalidArgumentException(sprintf('Undefined api instance called: "%s"', $name));
         }
 
         return $api;
+    }
+
+    /**
+     * @TODO
+     *
+     * @param string $name [description]
+     *
+     * @throws \BadMethodCallException
+     *
+     * @return ApiInterface
+     */
+    public function __call($name, $args)
+    {
+        try {
+            return $this->api($name);
+        } catch (\InvalidArgumentException $e) {
+            throw new \BadMethodCallException(sprintf('Undefined method called: "%s"', $name));
+        }
     }
 
     /**
@@ -160,22 +167,23 @@ class Client
     }
 
     /**
-     * Returns the Tripolis API datacenter.
+     * Sets the API url.
      *
-     * @return string
-     *
-     * @throws \InvalidArgumentException If the given datacenter ins not valid.
+     * @param string $url
      */
-    private function getDatacenter($datacenter)
+    private function setApiUrl($url)
     {
-        $dc = $datacenter;
-        if (preg_match('/^[0-9]{2}$/', $datacenter)) {
-            $dc = sprintf('td%d', $datacenter);
-        }
-        if (!preg_match('/^td[0-9]{2}$/', $dc)) {
-            throw new \InvalidArgumentException(sprintf('The given datacenter "%s" is invalid.', $datacenter));
+        $url = filter_var($url, FILTER_VALIDATE_URL);
+        if (!$url) {
+            throw new \InvalidArgumentException('API URL should be a valid url');
         }
 
-        return $dc;
+        $url = rtrim($url, '\\/');
+        if (!preg_match('/api3\/rest$/', $url)) {
+            $url = sprintf('%s/api3/rest', $url);
+        }
+        $url = sprintf('%s/', $url);
+
+        $this->apiUrl = $url;
     }
 }

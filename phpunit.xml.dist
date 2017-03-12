@@ -12,7 +12,7 @@
     >
     <php>
         <!-- API Keys -->
-        <server name="TRIPOLIS_API_DATACENTER" value="YOUR_API_DATACENTER" />
+        <server name="TRIPOLIS_API_URL" value="YOUR_API_URL" />
         <server name="TRIPOLIS_API_USERNAME" value="YOUR_API_USERNAME" />
         <server name="TRIPOLIS_API_KEY" value="YOUR_API_KEY" />
         <server name="TRIPOLIS_CONTACT_DATABASE_ID" value="YOUR_CONTACT_DATABASE_ID" />
